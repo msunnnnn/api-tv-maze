@@ -3,10 +3,8 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-const TV_MAZE_SHOWS = "http://api.tvmaze.com/search/shows";
+const TV_MAZE_API_URL = "http://api.tvmaze.com";
 const MISSING_IMG_URL = "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
-//TODO: TV_MAZE_SHOWS rename and make base
-//const TV_MAZE_EPISODES = `http://api.tvmaze.com/shows/${ }/episodes`
 
 
 /** Given a search term, search for tv shows that match that query.
@@ -19,8 +17,8 @@ const MISSING_IMG_URL = "https://store-images.s-microsoft.com/image/apps.65316.1
 async function getShowsByTerm(q) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   //take term and make request to TV show API for object
-  //TODO: return all shows in search, missing image assignment
-  const shows = await axios.get(TV_MAZE_SHOWS, { params: { q } });
+
+  const shows = await axios.get(`${TV_MAZE_API_URL}/search/shows`, { params: { q } });
   const showList = [];
 
   for (let result of shows.data) {
@@ -43,9 +41,6 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
-    if (!show.image) {
-      show.image = missingImage;
-    }
 
     const $show = $(
       `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
@@ -92,7 +87,25 @@ $searchForm.on("submit", async function (evt) {
  *      { id, name, season, number }
  */
 
-// async function getEpisodesOfShow(id) { }
+async function getEpisodesOfShow(id) {
+
+  const episodes = await axios.get(`${TV_MAZE_API_URL}/shows/${id}/episodes`);
+  console.log(episodes);
+
+  const episodeList = [];
+
+  for (let result of episodes.data) {
+    let episode = {
+      id: result.id,
+      name: result.name,
+      season: result.season,
+      number: result.number
+    };
+
+    episodeList.push(episode);
+  }
+  return episodeList;
+}
 
 /** Write a clear docstring for this function... */
 
