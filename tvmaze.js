@@ -3,7 +3,9 @@
 const $showsList = $("#showsList");
 const $episodesArea = $("#episodesArea");
 const $searchForm = $("#searchForm");
-const TV_MAZE_SHOWS = "http://api.tvmaze.com/search/shows"
+const TV_MAZE_SHOWS = "http://api.tvmaze.com/search/shows";
+const MISSING_IMG_URL = "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300";
+//TODO: TV_MAZE_SHOWS rename and make base
 //const TV_MAZE_EPISODES = `http://api.tvmaze.com/shows/${ }/episodes`
 
 
@@ -17,19 +19,21 @@ const TV_MAZE_SHOWS = "http://api.tvmaze.com/search/shows"
 async function getShowsByTerm(q) {
   // ADD: Remove placeholder & make request to TVMaze search shows API.
   //take term and make request to TV show API for object
-  const show = await axios.get(TV_MAZE_SHOWS, {params: {q}});
-  const id = show.data[0].show.id;
-  const name = show.data[0].show.name;
-  const summary = show.data[0].show.summary;
-  const image = show.data[0].show.image.medium
-  return [
-    {
-      id,
-      name,
-      summary,
-      image
-    }
-  ]
+  //TODO: return all shows in search, missing image assignment
+  const shows = await axios.get(TV_MAZE_SHOWS, { params: { q } });
+  const showList = [];
+
+  for (let result of shows.data) {
+    let show = {
+      id: result.show.id,
+      name: result.show.name,
+      summary: result.show.summary,
+      image: result.show.image ? result.show.image.medium : MISSING_IMG_URL
+    };
+
+    showList.push(show);
+  }
+  return showList;
 }
 
 
@@ -39,12 +43,16 @@ function populateShows(shows) {
   $showsList.empty();
 
   for (let show of shows) {
+    if (!show.image) {
+      show.image = missingImage;
+    }
+
     const $show = $(
-        `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
+      `<div data-show-id="${show.id}" class="Show col-md-12 col-lg-6 mb-4">
          <div class="media">
            <img
-              src="http://static.tvmaze.com/uploads/images/medium_portrait/160/401704.jpg"
-              alt="Bletchly Circle San Francisco"
+              src="${show.image}"
+              alt="${show.name} poster"
               class="w-25 me-3">
            <div class="media-body">
              <h5 class="text-primary">${show.name}</h5>
@@ -57,7 +65,8 @@ function populateShows(shows) {
        </div>
       `);
 
-    $showsList.append($show);  }
+    $showsList.append($show);
+  }
 }
 
 
