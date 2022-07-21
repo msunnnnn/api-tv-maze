@@ -90,21 +90,32 @@ $searchForm.on("submit", async function (evt) {
 async function getEpisodesOfShow(id) {
 
   const episodes = await axios.get(`${TV_MAZE_API_URL}/shows/${id}/episodes`);
-  console.log(episodes);
+  console.log(episodes.data);
 
-  const episodeList = [];
+  return episodes.data.map(episode => {
+    let {id, name, season, number} = episode;
+    return {id, name, season, number}
+  })
 
-  for (let result of episodes.data) {
-    let episode = {
-      id: result.id,
-      name: result.name,
-      season: result.season,
-      number: result.number
-    };
+  // return episodes.data.map(episode =>
+  //   ({id :episode.id,
+  //     name:episode.name,
+  //     season: episode.season,
+  //     number:episode.number}))
 
-    episodeList.push(episode);
-  }
-  return episodeList;
+  // const episodeList = [];
+
+  // for (let result of episodes.data) {
+  //   let episode = {
+  //     id: result.id,
+  //     name: result.name,
+  //     season: result.season,
+  //     number: result.number
+  //   };
+
+  //   episodeList.push(episode);
+  // }
+  // return episodeList;
 }
 
 /**Given list of episodes, create list for DOM  */
@@ -119,11 +130,13 @@ function populateEpisodes(episodes) {
 
   for (let episode of episodes) {
     $episodesList
-      .append(`<li> ${episode.name}(Season: ${episode.season}, Episode: ${episode.number} </li>`);
+      .append(`<li>
+        ${episode.name}(Season: ${episode.season}, Episode: ${episode.number}
+        </li>`);
   }
 }
 
-/** Callback funtion for creating an episode list */
+/** Callback function for creating an episode list */
 
 async function findEpisodesAndList(event) {
   // const showId = $(event.target).parent().parent().parent().data().showId;
