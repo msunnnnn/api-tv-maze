@@ -123,12 +123,12 @@ function populateEpisodes(episodes) {
   }
 }
 
-/** Looks to parent element of event and creates an episode list for DOM */
+/** Callback funtion for creating an episode list */
 
-async function findEpisodesAndList(event){
+async function findEpisodesAndList(event) {
   // const showId = $(event.target).parent().parent().parent().data().showId;
   const showId = $(event.target).closest(".Show").data().showId;
-  console.log ("Show ID is :", showId);
+  console.log("Show ID is :", showId);
   const episodes = await getEpisodesOfShow(showId);
   populateEpisodes(episodes);
 }
