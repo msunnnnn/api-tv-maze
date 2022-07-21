@@ -120,8 +120,17 @@ function populateEpisodes(episodes) {
   for (let episode of episodes) {
     $episodesList
       .append(`<li> ${episode.name}(Season: ${episode.season}, Episode: ${episode.number} </li>`);
-
   }
-  console.log
-
 }
+
+/** Looks to parent element of event and creates an episode list for DOM */
+
+async function findEpisodesAndList(event){
+  // const showId = $(event.target).parent().parent().parent().data().showId;
+  const showId = $(event.target).closest(".Show").data().showId;
+  console.log ("Show ID is :", showId);
+  const episodes = await getEpisodesOfShow(showId);
+  populateEpisodes(episodes);
+}
+
+$showsList.on("click", "button", findEpisodesAndList);
